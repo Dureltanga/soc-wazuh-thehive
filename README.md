@@ -81,4 +81,4 @@ Tous les secrets de ce dépôt sont des **placeholders** (`VOTRE_CLE_API_THEHIVE
 
 ## Auteur
 
-Durel Tanga — projet de fin d'année, Mastère Cybersécurité, Systèmes & Réseaux.
+Durel Tanga - projet de fin d'année, Mastère Cybersécurité, Systèmes & Réseaux.
