@@ -1,0 +1,8 @@
+<!-- A ajouter dans /var/ossec/etc/ossec.conf sur le MANAGER Wazuh (VM Wazuh-SOC) -->
+<!-- A partir du niveau 10, bannit l'IP attaquante via le pare-feu de la machine ciblee -->
+<active-response>
+  <command>firewall-drop</command>
+  <location>local</location>
+  <level>10</level>
+  <timeout>180</timeout>
+</active-response>

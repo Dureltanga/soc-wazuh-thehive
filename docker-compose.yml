@@ -1,0 +1,84 @@
+# Stack TheHive + Cortex (machine TheHive-SOC)
+# A placer dans ~/thehive-stack/docker-compose.yml puis : docker compose up -d
+# Prerequis : Docker + docker compose, et sur l'hote : sudo sysctl -w vm.max_map_count=262144
+
+services:
+  cassandra:
+    image: cassandra:4.1
+    container_name: cassandra
+    restart: unless-stopped
+    environment:
+      - MAX_HEAP_SIZE=512M
+      - HEAP_NEWSIZE=128M
+      - CASSANDRA_CLUSTER_NAME=thp
+    volumes:
+      - cassandradata:/var/lib/cassandra
+    healthcheck:
+      test: ["CMD-SHELL", "nodetool status | grep -q '^UN'"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+
+  elasticsearch:
+    image: elasticsearch:7.17.28
+    container_name: elasticsearch
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+      - xpack.security.enabled=false
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health | grep -q '\"status\"'"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+
+  thehive:
+    image: strangebee/thehive:5.4
+    container_name: thehive
+    restart: unless-stopped
+    depends_on:
+      cassandra:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+    ports:
+      - "9000:9000"
+    environment:
+      - JVM_OPTS=-Xms1g -Xmx1g
+    command:
+      - --secret
+      - "REMPLACER_PAR_UN_SECRET_64_CARACTERES"   # genere avec : openssl rand -hex 32
+      - "--cql-hostnames"
+      - cassandra
+      - "--index-backend"
+      - elasticsearch
+      - "--es-hostnames"
+      - elasticsearch
+    volumes:
+      - thehivedata:/opt/thp/thehive/files
+
+  cortex:
+    image: thehiveproject/cortex:3.1.8
+    container_name: cortex
+    restart: unless-stopped
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    ports:
+      - "9001:9001"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - cortexjobs:/tmp/cortex-jobs
+
+volumes:
+  cassandradata:
+  esdata:
+  thehivedata:
+  cortexjobs:

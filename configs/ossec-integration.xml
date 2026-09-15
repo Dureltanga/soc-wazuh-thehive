@@ -1,0 +1,9 @@
+<!-- A ajouter dans /var/ossec/etc/ossec.conf sur le MANAGER Wazuh (VM Wazuh-SOC) -->
+<!-- Envoie les alertes de niveau >= 7 vers TheHive -->
+<integration>
+  <name>custom-w2thive</name>
+  <hook_url>http://IP_THEHIVE:9000</hook_url>
+  <api_key>VOTRE_CLE_API_THEHIVE</api_key>
+  <alert_format>json</alert_format>
+  <level>7</level>
+</integration>

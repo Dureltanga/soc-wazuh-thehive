@@ -1,0 +1,9 @@
+# Ne jamais versionner
+*.vdi
+*.vmdk
+*.ova
+*.iso
+*.log
+.env
+secrets.txt
+data/

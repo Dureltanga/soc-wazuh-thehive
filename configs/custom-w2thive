@@ -1,0 +1,8 @@
+#!/bin/sh
+# Lanceur appele par Wazuh. A placer dans /var/ossec/integrations/custom-w2thive
+# Droits : chmod 750 ; proprietaire root:wazuh
+WPYTHON_BIN="framework/python/bin/python3"
+SCRIPT_PATH_NAME="$0"
+DIR_NAME="$(cd $(dirname ${SCRIPT_PATH_NAME}); pwd -P)"
+WODLE_SCRIPT="${DIR_NAME}/custom-w2thive.py"
+/var/ossec/${WPYTHON_BIN} ${WODLE_SCRIPT} "$@"
